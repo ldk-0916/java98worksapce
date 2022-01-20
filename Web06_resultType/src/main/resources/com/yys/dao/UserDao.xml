@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yys.dao.UserDao">
+    <!--
+        resultype属性会自动映射:根据结果集的字段名和POJO的属性名的对应关系进行映射
+        resultMap:结果集映射(手动的)
+         autoMapping="true" 表示能自动映射的就会进行自动映射，不能自动映射的属性，才进行手动映射
+         column:对应的是数据库的字段名  property:对应的是映射实体类的字段名
+    -->
+    <!--<resultMap id="userInfoMap" type="UserInfo" autoMapping="true">
+            <id column="uid" property="userId"></id>
+            <result column="username" property="username"></result>
+            <result column="sex" property="userSex"></result>
+            <result column="birthday" property="userBirthday"></result>
+            <result column="address" property="userAddress"></result>
+    </resultMap>
+    <select id="findAll" resultMap="userInfoMap">
+        select uid,username,sex,birthday,address from t_user;
+    </select>-->
+
+    <select id="findUserListByAddress" parameterType="string" resultType="user">
+        select * from t_user
+
+            <!--加一个if条件作为判断: -->
+            <if test="address !=null">
+                where address=#{address}
+            </if>
+
+    </select>
+
+    <select id="findUserListByAddressAndSex" parameterType="user" resultType="user">
+        select * from t_user
+        <!--<where>
+            <if test="address !=null">
+                And address=#{address}
+            </if>
+            <if test="sex !=null">
+                And sex=#{sex}
+            </if>
+        </where>-->
+        <!--choose标签-->
+        <where>
+            <choose>
+                <when test="address != null">
+                    and address=#{address}
+                </when>
+                <when test="sex != null">
+                    and sex=#{sex}
+                </when>
+                <otherwise>
+                    1=1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <delete id="deleteById" parameterType="user">
+        delete from t_user
+        <!--
+           将传入的集合中的数据遍历出来，放到()里面
+           使用foreach标签遍历
+               collection属性:要遍历的集合，如果要遍历的是一个List则写成list
+               item属性: 遍历出来的每一个元素
+               separator属性: 遍历出来的每一个元素之间的分隔符
+               index属性: 遍历出来的每一个元素的索引
+               open属性: 在遍历出来的第一个元素之前拼接字符串
+               close属性: 在遍历出来的最后一个元素之后拼接字符串
+       -->
+        <foreach collection="list" item="id" separator="," open="where uid in(" close=")" >
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
