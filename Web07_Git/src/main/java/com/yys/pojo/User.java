@@ -55,4 +55,7 @@ public class User {
     public int hashCode() {
         return Objects.hash(getName(), getAddress());
     }
+    public void show(){
+        System.out.println("HelloWorld");
+    }
 }
